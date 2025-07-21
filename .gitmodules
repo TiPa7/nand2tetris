@@ -1,6 +1,6 @@
 [submodule "Woche 10/compiler2"]
 	path = Woche 10/compiler2
-	url = git@github.com:TiPa7/compiler2.git
+	url = git@github.com:TiPa7/nand2tetrisCompiler2.git
 [submodule "Woche9/compiler1"]
 	path = Woche9/compiler1
-	url = git@github.com:TiPa7/compiler1.git
+	url = git@github.com:TiPa7/nand2tetris-compiler1.git
