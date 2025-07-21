@@ -1,0 +1,307 @@
+/**
+ * Polynomial Plotter in Jack (Nand2Tetris)
+ *
+ * Dieses Programm liest:
+ *  1. Den Grad n eines Polynoms (integer ≥ 0).
+ *  2. Nacheinander die Koeffizienten a_n, a_{n-1}, …, a_0 (integer).
+ *  3. Plottet dann das Polynom f(x) = a_n·x^n + … + a_1·x + a_0
+ *     punktweise.
+ *
+ * Standardränder:
+ *   x_min = –200, x_max = +200
+ *   y_min = –100, y_max = +100
+ *
+ * Mapping auf den Hack-Screen (512×256 Pixel):
+ *   pixelX = (x + (calcscreen_x_max/2))
+ *   pixelY = (y + (calcscreen_y_max/2))
+ *
+ * Hinweis:
+ *  - Wir speichern Koeffizienten in einem Array maximaler Länge 10 (Grad ≤ 9).
+ * Die Koeffizienten sollten vom Grad <=99 sein, damit das ausgeschriebene Polynom korrekt ist.
+ * Die Darstellung der Funktion klappt aber auch für größere Koeffizienten.
+ */
+
+class Main {
+
+    function void drawCalcScreen(int calcscreen_x_max, int calcscreen_y_max) {
+        //Ränder
+        do Screen.drawLine(0,0,calcscreen_x_max,0);
+        do Screen.drawLine(calcscreen_x_max,0,calcscreen_x_max,calcscreen_y_max);
+        do Screen.drawLine(calcscreen_x_max,calcscreen_y_max,0,calcscreen_y_max);
+        do Screen.drawLine(0,calcscreen_y_max,0,0);
+        //x-Achse
+        do Screen.drawLine(0,(calcscreen_y_max/2), calcscreen_x_max, (calcscreen_y_max/2));
+        //y-Achse
+        do Screen.drawLine((calcscreen_x_max/2),0, (calcscreen_x_max/2), calcscreen_y_max);
+
+        //y-Achsen-Beschriftung:
+        do Screen.drawLine(
+        (calcscreen_x_max / 2) - 2,
+        ((calcscreen_y_max / 4)*3),
+        (calcscreen_x_max / 2) + 2,
+        ((calcscreen_y_max / 4)*3));
+        do Screen.drawLine(
+        (calcscreen_x_max / 2) - 2,
+        (calcscreen_y_max / 4),
+        (calcscreen_x_max / 2) + 2,
+        (calcscreen_y_max / 4));
+
+        //x-Achsen-Beschriftung:
+        do Screen.drawLine(
+        ((calcscreen_x_max / 4)*3),
+        (calcscreen_y_max / 2) - 2,
+        ((calcscreen_x_max / 4)*3),
+        (calcscreen_y_max / 2) + 2);
+        
+        do Screen.drawLine(
+        (calcscreen_x_max / 4),
+        (calcscreen_y_max / 2) - 2,
+        (calcscreen_x_max / 4),
+        (calcscreen_y_max / 2) + 2);
+        
+        return;
+    }
+
+
+function String appendNumberToString(String base, int number) {
+    var int absNum, tens, digit;
+    
+    if (number < 0) {
+        let base = base.appendChar(45);   // ASCII 45 = '-'
+        let absNum = Math.abs(number);    // Betrag von number
+    }
+    else {
+        let absNum = number;              // positiver Wert
+    }
+    let tens = absNum / 10;               // ganzzahliger Anteil
+    if (tens > 0) {
+        let digit = tens + 48;            // Zehnerstelle als ASCII
+        let base = base.appendChar(digit);
+    }
+    let digit = ((absNum - (tens * 10)) + 48);
+    let base = base.appendChar(digit);
+
+    return base;
+}
+
+function String coeffsToArrayString(Array coeffs, int degree) {
+    var int i;
+    var String arrayString;
+    var int currentCoeff;
+    let arrayString = String.new(100);
+
+    // Coefficients: (mit Space)
+    // 67 111 101 102 102 105 99 105 101 110 116 115 32 
+    let arrayString = arrayString.appendChar(67);
+    let arrayString = arrayString.appendChar(111);
+    let arrayString = arrayString.appendChar(101);
+    let arrayString = arrayString.appendChar(102);
+    let arrayString = arrayString.appendChar(102);
+    let arrayString = arrayString.appendChar(105);
+    let arrayString = arrayString.appendChar(99);
+    let arrayString = arrayString.appendChar(105);
+    let arrayString = arrayString.appendChar(101);
+    let arrayString = arrayString.appendChar(110);
+    let arrayString = arrayString.appendChar(116);
+    let arrayString = arrayString.appendChar(115);
+    let arrayString = arrayString.appendChar(58);
+    let arrayString = arrayString.appendChar(32);
+
+    let arrayString = arrayString.appendChar(91); // [
+    let i = degree;
+    while (i > 0) {
+        let currentCoeff = Math.abs(coeffs[i]);
+        if(currentCoeff < 0) {
+            let currentCoeff = Math.abs(currentCoeff);
+            let arrayString = arrayString.appendChar(45);            // -
+            let arrayString = Main.appendNumberToString(arrayString, coeffs[i]);
+            let arrayString = arrayString.appendChar(44);           // ,
+        } else {
+            let arrayString = Main.appendNumberToString(arrayString, coeffs[i]);
+            let arrayString = arrayString.appendChar(44);           // ,
+        }
+        let i = i-1;
+    }
+
+    //Letzten Koeff. OHNE , 
+    if(currentCoeff < 0) {
+            let currentCoeff = Math.abs(currentCoeff);
+            let arrayString = arrayString.appendChar(45);            // -
+            let arrayString = Main.appendNumberToString(arrayString, coeffs[i]);
+        } else {
+            let arrayString = Main.appendNumberToString(arrayString, coeffs[i]);
+        }
+
+    let arrayString = arrayString.appendChar(93); // ]
+    return arrayString;
+}
+
+
+function String polynomToString(Array coefficients, int n) {
+    var String outp;
+    var int i;
+
+    let outp = String.new(200);
+    let outp = outp.appendChar(80);   // 'P'
+    let outp = outp.appendChar(111);  // 'o'
+    let outp = outp.appendChar(108);  // 'l'
+    let outp = outp.appendChar(121);  // 'y'
+    let outp = outp.appendChar(110);  // 'n'
+    let outp = outp.appendChar(111);  // 'o'
+    let outp = outp.appendChar(109);  // 'm'
+    let outp = outp.appendChar(58);   // ':'
+
+    let i = n;
+    while (i > -1) {
+        let outp = outp.appendChar(32);  // ' '
+
+        if (coefficients[i] < 0) {
+            //let outp = outp.appendChar(45);  // '-'
+            let outp = Main.appendNumberToString(outp, coefficients[i]);
+        }
+        else {
+            let outp = outp.appendChar(43);  // '+'
+            let outp = Main.appendNumberToString(outp, coefficients[i]);
+        }
+
+        let outp = outp.appendChar(120);    // ASCII 120 = 'x'
+        let outp = outp.appendChar(94);     // ASCII  94 = '^'
+        let outp = outp.appendChar(i + 48); // Exponent i als ASCII-Ziffer
+
+        let i = i - 1;
+    }
+
+    return outp;
+}
+
+
+
+    /** 
+    Returns yValues (ys) for given xs of the polynom associated with the given coefficients.
+    n is the number of coefficients, m the numbers of xs.
+    **/
+    function Array calcYValues(Array coeffs, int n, Array xs, int m) {
+    var Array ys;
+    var int i;       // Laufindex für xs
+    var int x;       // aktueller x-Wert
+    var int y;       // akkumulierte Polynom-Summe
+    var int j;       // Laufindex für Koeffizienten
+    var int k;       // Laufindex für Potenzbildung
+    var int pow;     // speichert x^j
+    var int coeff;   // aktueller Koeffizient
+    var int term;    // einzeln berechneter Term coeff * x^j
+
+    let ys = Array.new(m);
+    let i = 0;
+    while(i < m) {
+        let x = xs[i];
+        let y = 0;
+        let j = 0;
+        while (j < n) {
+            let pow = 1;
+            let k = 0;
+            while (k < j) {
+                let pow = Math.multiply(pow, x);
+                let k = k + 1;
+            }
+            let coeff = coeffs[j];
+            let term  = Math.multiply(coeff, pow);
+            let y = y + term;
+            let j = j + 1;
+        }
+
+        let ys[i] = y;
+
+        let i = i + 1;
+    }
+    return ys;
+}
+
+
+    function void main() {
+        var Array coeffs;    // Array für Koeffizienten (max. Grad 99)
+        var int degree;      // Grad des Polynoms
+        var int xMin;        
+        var int xMax;        
+        var int yMin;        
+        var int yMax;        
+
+        var Array px; 
+        var Array py; 
+        var int pixelX; //Später fürs Zeichnen
+        var int pixelY; 
+
+        var int calcscreen_x_max; // 510
+        var int calcscreen_y_max; // 200
+
+        var int i;
+        var String polynomStr;
+
+        // Standard-Grenzen setzen
+        let calcscreen_x_max = 511;
+        let calcscreen_y_max = 200;
+
+        // Teile Calcscreen in vier Quadranten ein
+        let xMin = - (calcscreen_x_max/2);
+        let xMax =  (calcscreen_x_max/2);
+        let yMin = -(calcscreen_y_max/2);
+        let yMax =  (calcscreen_y_max/2);
+
+        let coeffs = Array.new(10);   // Platz für bis zu 10 Koeffizienten
+        let px     = Array.new(calcscreen_x_max);
+        let py     = Array.new(calcscreen_x_max);
+
+        // x-Werte init. (einfach)
+        let i = 0;
+        while (i < calcscreen_x_max) {      
+            let px[i] = xMin + i;  //  px[0]=−200, px[1]=−199, …, px[399]=+199
+            let i = i + 1;
+        }
+
+        do Screen.clearScreen();
+
+        let degree = Keyboard.readInt("Grad des Polynoms (10 >= n >= 0)?\n");
+        if (degree < 0) {
+            let degree = 0;
+        }
+        if (degree > 10) {
+            let degree = 10;
+        }
+
+        // Koeffizienten einlesen, von a_n absteigend bis a_0
+        let i = degree;
+        while ((i > 0) | (i = 0)) {
+            do Output.printString("Koeffizient a");
+            do Output.printInt(i);
+            let coeffs[i] = Keyboard.readInt(" eingeben \n");
+            let i = i - 1;
+        }
+
+        do Screen.clearScreen();
+
+        // Ränder des Calcscreens zeichnen
+        do Main.drawCalcScreen(calcscreen_x_max, calcscreen_y_max);
+
+        let py = Main.calcYValues(coeffs, degree+1, px, calcscreen_x_max); //Ein Koeff. mehr als Grad
+
+        let i = 0;
+        while (i < calcscreen_x_max) {
+            let pixelX = px[i] + (calcscreen_x_max / 2);
+            let pixelY = (- py[i]) + (calcscreen_y_max / 2);
+            // Nur Punkte innerhalb des Rechtecks zeichnen (0 <= pixelX <= 400, 0 <= pixelY <= 200)
+            if ((pixelX + 1 > 0) & (pixelX < calcscreen_x_max) & (pixelY + 1> 0) & (pixelY < calcscreen_y_max)) {
+                do Screen.drawPixel(pixelX, pixelY);
+            }
+            let i = i + 1;
+        }
+
+        let polynomStr = Main.polynomToString(coeffs, degree);
+        do Output.moveCursor(19, 0);
+        do Output.printString(polynomStr);
+        do Output.moveCursor(20, 0);
+        let polynomStr = Main.coeffsToArrayString(coeffs, degree);
+        do Output.printString(polynomStr);
+
+        return;
+    }
+}

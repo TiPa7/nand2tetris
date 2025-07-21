@@ -1,0 +1,53 @@
+(PRTLOOP)
+    @1
+    M=-1
+    @2
+    M=0
+    @SCREEN
+    D=A
+    @0
+    M=D
+    @24576
+    D=M
+    @PRTWHITE
+    D;JEQ
+    @PRTBLACK
+    0;JMP
+(PRTWHITE)
+    @0
+    D=M
+    @24576
+    D=D-A
+    @PRTLOOP
+    D;JGE
+    @PRINTPIXELWHITE
+    0;JMP
+(PRINTPIXELWHITE)
+    @2
+    D=M
+    @0
+    A=M
+    M=D
+    @0
+    M=M+1
+    @PRTWHITE
+    0;JMP
+(PRTBLACK)
+    @0
+    D=M
+    @24576
+    D=D-A
+    @PRTLOOP
+    D;JGE
+    @PRINTPIXELBLACK
+    0;JMP
+(PRINTPIXELBLACK)
+    @1
+    D=M
+    @0
+    A=M
+    M=D
+    @0
+    M=M+1
+    @PRTBLACK
+    0;JMP

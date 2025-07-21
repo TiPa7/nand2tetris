@@ -1,0 +1,99 @@
+@17
+D=A
+@SP
+AM=M+1
+A=A-1
+M=D //push constant 17
+@17
+D=A
+@SP
+AM=M+1
+A=A-1
+M=D //push constant 17
+@SP
+AM=M-1
+D=M
+A=A-1
+D=M-D
+@EQ_TRUE$1e28f196-0304-44a3-bc17-129b4f9a6d41
+D;JEQ
+(EQ_FALSE$1e28f196-0304-44a3-bc17-129b4f9a6d41)
+@0
+D=A
+@SP
+A=M-1
+M=D
+@END$1e28f196-0304-44a3-bc17-129b4f9a6d41
+0;JMP
+(EQ_TRUE$1e28f196-0304-44a3-bc17-129b4f9a6d41)
+D=-1
+@SP
+A=M-1
+M=D
+(END$1e28f196-0304-44a3-bc17-129b4f9a6d41) //eq
+@17
+D=A
+@SP
+AM=M+1
+A=A-1
+M=D //push constant 17
+@16
+D=A
+@SP
+AM=M+1
+A=A-1
+M=D //push constant 16
+@SP
+AM=M-1
+D=M
+A=A-1
+D=M-D
+@EQ_TRUE$bf2e00bc-248c-453c-af4c-0f4b36c144fc
+D;JEQ
+(EQ_FALSE$bf2e00bc-248c-453c-af4c-0f4b36c144fc)
+@0
+D=A
+@SP
+A=M-1
+M=D
+@END$bf2e00bc-248c-453c-af4c-0f4b36c144fc
+0;JMP
+(EQ_TRUE$bf2e00bc-248c-453c-af4c-0f4b36c144fc)
+D=-1
+@SP
+A=M-1
+M=D
+(END$bf2e00bc-248c-453c-af4c-0f4b36c144fc) //eq
+@16
+D=A
+@SP
+AM=M+1
+A=A-1
+M=D //push constant 16
+@17
+D=A
+@SP
+AM=M+1
+A=A-1
+M=D //push constant 17
+@SP
+AM=M-1
+D=M
+A=A-1
+D=M-D
+@EQ_TRUE$af59751c-b0dd-4492-a902-bb781eabfcb9
+D;JEQ
+(EQ_FALSE$af59751c-b0dd-4492-a902-bb781eabfcb9)
+@0
+D=A
+@SP
+A=M-1
+M=D
+@END$af59751c-b0dd-4492-a902-bb781eabfcb9
+0;JMP
+(EQ_TRUE$af59751c-b0dd-4492-a902-bb781eabfcb9)
+D=-1
+@SP
+A=M-1
+M=D
+(END$af59751c-b0dd-4492-a902-bb781eabfcb9) //eq
